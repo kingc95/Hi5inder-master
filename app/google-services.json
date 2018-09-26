@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "82402987776",
+    "firebase_url": "https://hi-5inder-7a4b4.firebaseio.com",
+    "project_id": "hi-5inder-7a4b4",
+    "storage_bucket": "hi-5inder-7a4b4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:82402987776:android:8b24b3b18268bba7",
+        "android_client_info": {
+          "package_name": "hi5inder.siefech.com.hi_5inder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "82402987776-jf949gi4v72rb88epo3t3vable619g8q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hi5inder.siefech.com.hi_5inder",
+            "certificate_hash": "85ad142093ae2847da2dea1fdd592dac8e846252"
+          }
+        },
+        {
+          "client_id": "82402987776-et07o5ar7hmpkgh9fkfn85p7e5a6dup5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTTGLEwGBISCcYXhdeYBBU3uiLNemmWFo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "82402987776-et07o5ar7hmpkgh9fkfn85p7e5a6dup5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
