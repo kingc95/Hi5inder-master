@@ -12,4 +12,9 @@
         <item name="android:itemBackground">@color/primary</item>
         <item name="android:background">?android:attr/listDivider</item>
     </style>
+
+    <style name="dialog" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/primary_dark</item>
+    </style>
+
 </resources>
