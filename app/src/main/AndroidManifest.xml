@@ -27,7 +27,11 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
-            android:theme="@style/Hi5indertheme"/>
+            android:theme="@style/Hi5indertheme" />
+        <activity
+            android:name=".SignUpActivity"
+            android:label="@string/title_activity_signup"
+            android:theme="@style/Hi5indertheme" />
     </application>
 
 </manifest>
