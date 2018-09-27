@@ -22,6 +22,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -85,7 +86,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             user.put("randomUser", randomUsername.isChecked());
 
             db.collection("users").document(firebaseAuth.getUid())
-                    .set(user)
+                    .set(user, SetOptions.merge())
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
