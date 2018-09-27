@@ -100,12 +100,17 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.profile) {
             // Handle the camera action
+            finish();
+            startActivity(new Intent(this, ProfileActivity.class));
 
         } else if (id == R.id.search) {
 
         } else if (id == R.id.leaderboard) {
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.logOut) {
+            firebaseAuth.signOut();
+            finish();
+            startActivity(new Intent(this, LoginActivity.class));
 
         } else if (id == R.id.nav_send) {
 
