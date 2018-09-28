@@ -44,6 +44,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     Button pic;
     Button submitProfile;
     private ByteArrayOutputStream baosSubmit;
+    boolean picUpdate = false;
 
 
     @Override
@@ -116,21 +117,28 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             }
         }
         else if (v == submitProfile){
-            byte[] dataByte = baosSubmit.toByteArray();
-            StorageReference picUploadRef = pathReference.child(firebaseAuth.getUid());
-            UploadTask uploadTask = picUploadRef.putBytes(dataByte);
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle unsuccessful uploads
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                    // ...
-                }
-            });
+            if (picUpdate){
+                byte[] dataByte = baosSubmit.toByteArray();
+                StorageReference picUploadRef = pathReference.child(firebaseAuth.getUid());
+                UploadTask uploadTask = picUploadRef.putBytes(dataByte);
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                        // ...
+                    }
+                });
+            }
+            else{
+                finish();
+                startActivity(new Intent(this, MainActivity.class));
+            }
+
         }
 
     }
@@ -160,6 +168,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
 
             baosSubmit = baos;
+            picUpdate = true;
 
         }
     }
