@@ -40,6 +40,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int PERMISSION_REQUEST_CODE = 200;
     Button pic;
+    Button submitProfile;
+    private ByteArrayOutputStream baosSubmit;
 
 
     @Override
@@ -52,7 +54,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         pic = findViewById(R.id.changePic);
         profilePic = findViewById(R.id.profileImage);
+        submitProfile = findViewById(R.id.submitEditProfile);
         pic.setOnClickListener(this);
+        submitProfile.setOnClickListener(this);
 
         loadWithGlide();
     }
@@ -109,6 +113,23 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 requestPermission();
             }
         }
+        else if (v == submitProfile){
+            byte[] dataByte = baosSubmit.toByteArray();
+            StorageReference picUploadRef = pathReference.child(firebaseAuth.getUid());
+            UploadTask uploadTask = picUploadRef.putBytes(dataByte);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle unsuccessful uploads
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                    // ...
+                }
+            });
+        }
 
     }
 
@@ -129,22 +150,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-            byte[] dataByte = baos.toByteArray();
 
-            StorageReference picUploadRef = pathReference.child(firebaseAuth.getUid());
-            UploadTask uploadTask = picUploadRef.putBytes(dataByte);
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle unsuccessful uploads
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                    // ...
-                }
-            });
+            baosSubmit = baos;
 
         }
     }
