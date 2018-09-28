@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Search Radius:"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
         <EditText
             android:id="@+id/searchRadiusText"
@@ -29,9 +29,10 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
-            android:hint="Enter radius here"
+            android:hint="Radius in km"
             android:inputType="numberDecimal"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textSize="16sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -48,7 +49,7 @@
             android:layout_weight="1"
             android:text="Random Username"
             android:textAlignment="viewStart"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
     </LinearLayout>
 
     <Button
