@@ -2,6 +2,8 @@ package hi5inder.siefech.com.hi_5inder;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -116,5 +118,10 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             //open login activity when user taps on the already registered textview
             startActivity(new Intent(this, LoginActivity.class));
         }
+    }
+    public void onConfigurationChanged(Configuration newConfig)
+    {
+        super.onConfigurationChanged(newConfig);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 }

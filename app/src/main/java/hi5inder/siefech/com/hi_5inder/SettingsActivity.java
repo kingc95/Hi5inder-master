@@ -2,6 +2,8 @@ package hi5inder.siefech.com.hi_5inder;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -103,5 +105,10 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                     });
         }
 
+    }
+    public void onConfigurationChanged(Configuration newConfig)
+    {
+        super.onConfigurationChanged(newConfig);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 }
