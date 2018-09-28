@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -145,8 +147,14 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
+
+            if (imageBitmap.getWidth() > imageBitmap.getHeight()) {
+                Matrix matrix = new Matrix();
+                matrix.postRotate(90);
+                imageBitmap = Bitmap.createBitmap(imageBitmap , 0, 0, imageBitmap.getWidth(), imageBitmap.getHeight(), matrix, true);
+            }
+
             profilePic.setImageBitmap(imageBitmap);
-            profilePic.setRotation(90);
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
