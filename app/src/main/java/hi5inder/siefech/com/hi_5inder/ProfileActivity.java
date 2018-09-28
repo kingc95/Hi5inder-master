@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -17,12 +18,16 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.Button;
+
+import java.io.ByteArrayOutputStream;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
     AlertDialog.Builder builder;
@@ -55,7 +60,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     public void loadWithGlide() {
         // [START storage_load_with_glide]
         // Reference to an image file in Cloud Storage
-        StorageReference pictureRef = pathReference.child(firebaseAuth.getUid() + ".png");
+        StorageReference pictureRef = pathReference.child(firebaseAuth.getUid());
 
         // ImageView in your Activity
         ImageView imageView = findViewById(R.id.profileImage);
@@ -121,6 +126,26 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             profilePic.setImageBitmap(imageBitmap);
             profilePic.setRotation(90);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+            byte[] dataByte = baos.toByteArray();
+
+            StorageReference picUploadRef = pathReference.child(firebaseAuth.getUid());
+            UploadTask uploadTask = picUploadRef.putBytes(dataByte);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle unsuccessful uploads
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                    // ...
+                }
+            });
+
         }
     }
 
