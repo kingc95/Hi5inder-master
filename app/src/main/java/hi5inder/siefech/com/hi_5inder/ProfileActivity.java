@@ -4,9 +4,6 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-<<<<<<< HEAD
-import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -18,7 +15,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-=======
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.provider.MediaStore;
@@ -29,32 +25,31 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
->>>>>>> e146314c819e071b37780de0474357c573eb87a0
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
     AlertDialog.Builder builder;
-<<<<<<< HEAD
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReference();
     StorageReference pathReference = storageRef.child("images/");
     private FirebaseAuth firebaseAuth;
     private Glide GlideApp;
-=======
     private ImageView profilePic;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int PERMISSION_REQUEST_CODE = 200;
     Button pic;
->>>>>>> e146314c819e071b37780de0474357c573eb87a0
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-<<<<<<< HEAD
 
         //getting firebase auth object
         firebaseAuth = FirebaseAuth.getInstance();
+
+        pic = findViewById(R.id.changePic);
+        profilePic = findViewById(R.id.profileImage);
+        pic.setOnClickListener(this);
 
         loadWithGlide();
     }
@@ -73,11 +68,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 .load(pictureRef)
                 .into(imageView);
         // [END storage_load_with_glide]
-=======
-        pic = findViewById(R.id.changePic);
-        profilePic = findViewById(R.id.profileImage);
-        pic.setOnClickListener(this);
->>>>>>> e146314c819e071b37780de0474357c573eb87a0
+
     }
 
     @Override
