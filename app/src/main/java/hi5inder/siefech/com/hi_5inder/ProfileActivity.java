@@ -1,5 +1,7 @@
 package hi5inder.siefech.com.hi_5inder;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -15,14 +17,30 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+>>>>>>> e146314c819e071b37780de0474357c573eb87a0
 
-public class ProfileActivity extends AppCompatActivity implements View.OnClickListener{
+public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
     AlertDialog.Builder builder;
+<<<<<<< HEAD
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReference();
     StorageReference pathReference = storageRef.child("images/");
     private FirebaseAuth firebaseAuth;
     private Glide GlideApp;
+    private ImageView profilePic;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int PERMISSION_REQUEST_CODE = 200;
+    Button pic;
 
 
     @Override
@@ -50,6 +68,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 .load(pictureRef)
                 .into(imageView);
         // [END storage_load_with_glide]
+        pic = findViewById(R.id.changePic);
+        profilePic = findViewById(R.id.profileImage);
+        pic.setOnClickListener(this);
     }
 
     @Override
@@ -77,6 +98,42 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onClick(View v) {
+        if (v == pic) {
+            if (checkPermission()) {
+                Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (takePicture.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(takePicture, REQUEST_IMAGE_CAPTURE);
+                }
+            } else {
+                requestPermission();
+            }
+        }
 
+    }
+
+    private void requestPermission() {
+
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.CAMERA},
+                PERMISSION_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            profilePic.setImageBitmap(imageBitmap);
+            profilePic.setRotation(90);
+        }
+    }
+
+    private boolean checkPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted
+            return false;
+        }
+        return true;
     }
 }
