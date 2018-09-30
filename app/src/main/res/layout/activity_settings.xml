@@ -35,23 +35,6 @@
             android:textSize="16sp" />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_weight="2"
-        android:orientation="horizontal">
-
-        <Switch
-            android:id="@+id/randomUsernameSwitch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Random Username"
-            android:textAlignment="viewStart"
-            android:textSize="16sp" />
-    </LinearLayout>
-
     <Button
         android:id="@+id/applySettingsbutton"
         android:layout_width="match_parent"

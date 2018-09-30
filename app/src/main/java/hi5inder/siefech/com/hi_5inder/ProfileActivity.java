@@ -12,12 +12,14 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -45,7 +47,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     Button submitProfile;
     private ByteArrayOutputStream baosSubmit;
     boolean picUpdate = false;
+    private EditText userName;
+    private EditText status;
 
+    //Firebase DB
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,10 +64,15 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         pic = findViewById(R.id.changePic);
         profilePic = findViewById(R.id.profileImage);
         submitProfile = findViewById(R.id.submitEditProfile);
+
+        userName = findViewById(R.id.userNameText);
+        status = findViewById(R.id.statusText);
+
         pic.setOnClickListener(this);
         submitProfile.setOnClickListener(this);
 
         loadWithGlide();
+
     }
 
     public void loadWithGlide() {

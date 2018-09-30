@@ -33,7 +33,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     private EditText radius;
     private Button applySetting;
-    private Switch randomUsername;
     AlertDialog.Builder builder;
 
     //Firebase DB
@@ -52,7 +51,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
         radius = (EditText) findViewById(R.id.searchRadiusText);
         applySetting = (Button) findViewById(R.id.applySettingsbutton);
-        randomUsername = (Switch) findViewById(R.id.randomUsernameSwitch);
 
         applySetting.setOnClickListener(this);
     }
@@ -85,7 +83,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         if (v == applySetting){
             Map<String, Object> user = new HashMap<>();
             user.put("radius", radius.getText().toString());
-            user.put("randomUser", randomUsername.isChecked());
 
             db.collection("users").document(firebaseAuth.getUid())
                     .set(user, SetOptions.merge())

@@ -15,9 +15,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -32,6 +45,13 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     //progress dialog
     private ProgressDialog progressDialog;
+
+    //Firebase DB
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+
+    String toReturn;
+    int randomNum = (int) (100 * Math.random());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,9 +113,27 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         //checking if success
                         if(task.isSuccessful()){
+                            Map<String, Object> user = new HashMap<>();
+                            try {
+                                user.put("username", getUsername());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
 
-                            finish();
-                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                            db.collection("users").document(firebaseAuth.getUid())
+                                    .set(user, SetOptions.merge())
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            finish();
+                                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                        }
+                                    });
                         }else{
                             //display some message here
                             Toast.makeText(SignUpActivity.this,"Registration Error",Toast.LENGTH_LONG).show();
@@ -123,5 +161,30 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     {
         super.onConfigurationChanged(newConfig);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    }
+
+    public String getUsername() throws JSONException {
+
+        JSONObject obj = new JSONObject(loadJSONFromAsset());
+        JSONArray userNames = obj.getJSONArray("names");
+        JSONArray adj = obj.getJSONArray("adjectives");
+        toReturn = (userNames.getString((int) (userNames.length() * Math.random())) + adj.getString((int) (adj.length() * Math.random())) + Integer.toString(randomNum));
+
+        return toReturn;
+    }
+    public String loadJSONFromAsset() {
+        String json = null;
+        try {
+            InputStream is = getAssets().open("randomUser.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
     }
 }
