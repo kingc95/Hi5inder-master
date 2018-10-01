@@ -2,6 +2,7 @@ package hi5inder.siefech.com.hi_5inder;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -68,7 +69,12 @@ public class SearchActivity extends AppCompatActivity implements LocationListene
 
     private Double radius;
 
-    private int counter;
+    private double latitude;
+    private double longitude;
+
+    private int counter = 0;
+    Map<String, Object> userMap = new HashMap<>();
+
 
 
     @Override
@@ -94,7 +100,7 @@ public class SearchActivity extends AppCompatActivity implements LocationListene
         }
 
         //getting current user
-        final FirebaseUser user = firebaseAuth.getCurrentUser();
+        final FirebaseUser CurUser = firebaseAuth.getCurrentUser();
 
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (!lm.isProviderEnabled(GPS_PROVIDER)) {
@@ -142,15 +148,11 @@ public class SearchActivity extends AppCompatActivity implements LocationListene
     }
 
 
-    private void initializeAdapter(){
-        MyAdapter adapter = new MyAdapter(persons);
-        rv.setAdapter(adapter);
-    }
-
     @Override
     public void onLocationChanged(Location location) {
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
+        persons.clear();
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
         // Push your location to FireBase
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         final CollectionReference ref = database.collection("geoFire");
@@ -180,23 +182,22 @@ public class SearchActivity extends AppCompatActivity implements LocationListene
             public void onKeyEntered(String documentID, GeoPoint location) {
 
                 System.out.println(String.format("Document %s entered the search area at [%f,%f]", documentID, location.getLatitude(), location.getLongitude()));
-                DocumentReference userRef = db.collection("users").document(documentID);
-                userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                DocumentReference userRef1 = db.collection("users").document(documentID);
+                userRef1.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         user = documentSnapshot.toObject(User.class);
                         curUserName = user.username;
                         curUserStatus = user.status;
+                        System.out.println(String.format("Username %s entered and status is %s", curUserName, curUserStatus));
+                        persons.add(new User(curUserName, curUserStatus));
                     }
                 });
 
-                persons.add(new User(curUserName, curUserStatus));
-
-                Map<String, Object> user = new HashMap<>();
-                user.put("tempID", counter);
+                userMap.put("tempID", counter);
 
                 db.collection("users").document(documentID)
-                        .set(user, SetOptions.merge())
+                        .set(userMap, SetOptions.merge())
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
@@ -212,21 +213,11 @@ public class SearchActivity extends AppCompatActivity implements LocationListene
 
                 counter += 1;
                 initializeAdapter();
-
             }
 
             @Override
             public void onKeyExited(String documentID) {
                 System.out.println(String.format("Document %s is no longer in the search area", documentID));
-                DocumentReference userRef = db.collection("users").document(documentID);
-                userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        user = documentSnapshot.toObject(User.class);
-                        int tempID = user.tempID;
-                        persons.remove(tempID);
-                    }
-                });
 
             }
 
@@ -247,6 +238,7 @@ public class SearchActivity extends AppCompatActivity implements LocationListene
         });
 
 
+
     }
 
     @Override
@@ -263,4 +255,11 @@ public class SearchActivity extends AppCompatActivity implements LocationListene
     public void onProviderDisabled(String provider) {
 
     }
+    private void initializeAdapter(){
+        MyAdapter adapter = new MyAdapter(persons);
+        rv.setAdapter(adapter);
+    }
+
+
+
 }
