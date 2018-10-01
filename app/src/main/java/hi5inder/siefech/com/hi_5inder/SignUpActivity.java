@@ -116,6 +116,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                             Map<String, Object> user = new HashMap<>();
                             try {
                                 user.put("username", getUsername());
+                                user.put("status", " ");
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }

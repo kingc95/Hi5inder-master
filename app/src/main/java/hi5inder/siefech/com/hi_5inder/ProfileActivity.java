@@ -8,18 +8,26 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
+import android.provider.DocumentsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.Source;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -30,8 +38,11 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
     AlertDialog.Builder builder;
@@ -49,6 +60,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     boolean picUpdate = false;
     private EditText userName;
     private EditText status;
+    private User user;
 
     //Firebase DB
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -72,6 +84,20 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         submitProfile.setOnClickListener(this);
 
         loadWithGlide();
+
+        //get current username and status
+        DocumentReference userRef = db.collection("users").document(firebaseAuth.getUid());
+        Source source = Source.DEFAULT;
+
+        userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                user = documentSnapshot.toObject(User.class);
+                userName.setText(user.username);
+                status.setText(user.status);
+            }
+        });
+
 
     }
 
@@ -128,6 +154,28 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             }
         }
         else if (v == submitProfile){
+
+            Map<String, Object> user = new HashMap<>();
+            user.put("status", status.getText().toString());
+            user.put("username", userName.getText().toString());
+
+            db.collection("users").document(firebaseAuth.getUid())
+                    .set(user, SetOptions.merge())
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(getApplicationContext(), "Profile Saved!", Toast.LENGTH_LONG).show();
+                            finish();
+                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getApplicationContext(), "Profile NOT Saved!", Toast.LENGTH_LONG).show();
+                        }
+                    });
+
             if (picUpdate){
                 byte[] dataByte = baosSubmit.toByteArray();
                 StorageReference picUploadRef = pathReference.child(firebaseAuth.getUid());
