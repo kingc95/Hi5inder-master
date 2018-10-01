@@ -28,4 +28,8 @@ public class User {
     public User(int tempID) {
         this.tempID = tempID;
     }
+
+    public User(Double radius) {
+        this.radius = radius;
+    }
 }
