@@ -174,7 +174,7 @@ public class SearchActivity extends AppCompatActivity implements LocationListene
             }
         });
 
-        GeoQuery geoQuery = geoFirestore.queryAtLocation(new GeoPoint(latitude, longitude), radius);
+        GeoQuery geoQuery = geoFirestore.queryAtLocation(new GeoPoint(latitude, longitude), 1.6);
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override
             public void onKeyEntered(String documentID, GeoPoint location) {
