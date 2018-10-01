@@ -82,7 +82,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         if (v == applySetting){
             Map<String, Object> user = new HashMap<>();
-            user.put("radius", radius.getText().toString());
+            user.put("radius", Double.parseDouble(radius.getText().toString()));
 
             db.collection("users").document(firebaseAuth.getUid())
                     .set(user, SetOptions.merge())

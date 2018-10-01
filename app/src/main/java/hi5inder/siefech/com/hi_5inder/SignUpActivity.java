@@ -117,6 +117,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                             try {
                                 user.put("username", getUsername());
                                 user.put("status", " ");
+                                user.put("radius", 1.6);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }

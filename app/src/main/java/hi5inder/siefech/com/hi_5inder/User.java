@@ -6,16 +6,26 @@ import com.google.firebase.firestore.IgnoreExtraProperties;
 public class User {
 
     public String username;
-    public String radius;
+    public Double radius;
     public String status;
+    public int tempID;
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String username, String radius, String status) {
+    public User(String username, Double radius, String status) {
         this.username = username;
         this.radius = radius;
         this.status = status;
+    }
+
+    public User(String username, String status) {
+        this.username = username;
+        this.status = status;
+    }
+
+    public User(int tempID) {
+        this.tempID = tempID;
     }
 }

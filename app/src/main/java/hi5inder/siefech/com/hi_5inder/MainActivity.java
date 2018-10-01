@@ -106,6 +106,8 @@ public class MainActivity extends AppCompatActivity
             startActivity(new Intent(this, ProfileActivity.class));
 
         } else if (id == R.id.search) {
+            finish();
+            startActivity(new Intent(this, SearchActivity.class));
 
         } else if (id == R.id.leaderboard) {
 
