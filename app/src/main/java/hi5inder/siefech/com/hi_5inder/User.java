@@ -9,6 +9,7 @@ public class User {
     public Double radius;
     public String status;
     public int tempID;
+    public String uid;
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
@@ -20,9 +21,10 @@ public class User {
         this.status = status;
     }
 
-    public User(String username, String status) {
+    public User(String username, String status, String userID) {
         this.username = username;
         this.status = status;
+        this.uid = userID;
     }
 
     public User(int tempID) {

@@ -1,10 +1,7 @@
 package hi5inder.siefech.com.hi_5inder;
 
 import android.Manifest;
-import android.app.AlertDialog;
-import android.app.Application;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -19,6 +16,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,7 +30,6 @@ import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Source;
 
 import org.imperiumlabs.geofirestore.GeoFirestore;
-import org.imperiumlabs.geofirestore.GeoLocation;
 import org.imperiumlabs.geofirestore.GeoQuery;
 import org.imperiumlabs.geofirestore.GeoQueryEventListener;
 
@@ -68,6 +65,8 @@ public class SearchActivity extends AppCompatActivity implements LocationListene
     private Location location;
 
     private Double radius;
+
+    Glide glide;
 
     private double latitude;
     private double longitude;
@@ -179,7 +178,7 @@ public class SearchActivity extends AppCompatActivity implements LocationListene
         GeoQuery geoQuery = geoFirestore.queryAtLocation(new GeoPoint(latitude, longitude), 1.6);
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override
-            public void onKeyEntered(String documentID, GeoPoint location) {
+            public void onKeyEntered(final String documentID, GeoPoint location) {
 
                 System.out.println(String.format("Document %s entered the search area at [%f,%f]", documentID, location.getLatitude(), location.getLongitude()));
                 DocumentReference userRef1 = db.collection("users").document(documentID);
@@ -190,7 +189,7 @@ public class SearchActivity extends AppCompatActivity implements LocationListene
                         curUserName = user.username;
                         curUserStatus = user.status;
                         System.out.println(String.format("Username %s entered and status is %s", curUserName, curUserStatus));
-                        persons.add(new User(curUserName, curUserStatus));
+                        persons.add(new User(curUserName, curUserStatus, documentID));
                     }
                 });
 
@@ -256,7 +255,7 @@ public class SearchActivity extends AppCompatActivity implements LocationListene
 
     }
     private void initializeAdapter(){
-        MyAdapter adapter = new MyAdapter(persons);
+        MyAdapter adapter = new MyAdapter(Glide.with(this), persons);
         rv.setAdapter(adapter);
     }
 
