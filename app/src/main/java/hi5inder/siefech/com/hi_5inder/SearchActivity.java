@@ -40,7 +40,7 @@ import java.util.Map;
 
 import static android.location.LocationManager.GPS_PROVIDER;
 
-public class SearchActivity extends AppCompatActivity implements LocationListener {
+public class SearchActivity extends AppCompatActivity implements LocationListener, GeoQueryEventListener{
 
     //Firebase DB
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -64,9 +64,15 @@ public class SearchActivity extends AppCompatActivity implements LocationListene
     private static final float MIN_DISTANCE = 100;
     private Location location;
 
+    private GeoQuery geoQuery;
+
     private Double radius;
 
+    private GeoPoint QUERY_CENTER = new GeoPoint(36.963817, -122.018284);
+
     Glide glide;
+
+
 
     private double latitude;
     private double longitude;
@@ -136,6 +142,19 @@ public class SearchActivity extends AppCompatActivity implements LocationListene
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+        location = locationManager.getLastKnownLocation(GPS_PROVIDER);
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+        final CollectionReference ref = database.collection("geoFire");
+        GeoFirestore geoFire = new GeoFirestore(ref);
+        geoFire.setLocation(firebaseAuth.getUid(), new GeoPoint(location.getLatitude(), location.getLongitude()), new GeoFirestore.CompletionListener() {
+            @Override
+            public void onComplete(Exception e) {
+
+            }
+        });
+        QUERY_CENTER = new GeoPoint(location.getLatitude(), location.getLongitude());
+        geoQuery = geoFirestore.queryAtLocation(QUERY_CENTER, 1.6);
+        geoQuery.addGeoQueryEventListener(this);
 
 
     }
@@ -149,9 +168,9 @@ public class SearchActivity extends AppCompatActivity implements LocationListene
 
     @Override
     public void onLocationChanged(Location location) {
-        persons.clear();
         latitude = location.getLatitude();
         longitude = location.getLongitude();
+        QUERY_CENTER =  new GeoPoint(latitude, longitude);
         // Push your location to FireBase
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         final CollectionReference ref = database.collection("geoFire");
@@ -174,70 +193,6 @@ public class SearchActivity extends AppCompatActivity implements LocationListene
                 radius = user.radius;
             }
         });
-
-        GeoQuery geoQuery = geoFirestore.queryAtLocation(new GeoPoint(latitude, longitude), 1.6);
-        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
-            @Override
-            public void onKeyEntered(final String documentID, GeoPoint location) {
-
-                System.out.println(String.format("Document %s entered the search area at [%f,%f]", documentID, location.getLatitude(), location.getLongitude()));
-                DocumentReference userRef1 = db.collection("users").document(documentID);
-                userRef1.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        user = documentSnapshot.toObject(User.class);
-                        curUserName = user.username;
-                        curUserStatus = user.status;
-                        System.out.println(String.format("Username %s entered and status is %s", curUserName, curUserStatus));
-                        persons.add(new User(curUserName, curUserStatus, documentID));
-                    }
-                });
-
-                userMap.put("tempID", counter);
-
-                db.collection("users").document(documentID)
-                        .set(userMap, SetOptions.merge())
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-
-                            }
-                        });
-
-                counter += 1;
-                initializeAdapter();
-            }
-
-            @Override
-            public void onKeyExited(String documentID) {
-                System.out.println(String.format("Document %s is no longer in the search area", documentID));
-
-            }
-
-            @Override
-            public void onKeyMoved(String documentID, GeoPoint location) {
-                System.out.println(String.format("Document %s moved within the search area to [%f,%f]", documentID, location.getLatitude(), location.getLongitude()));
-            }
-
-            @Override
-            public void onGeoQueryReady() {
-                System.out.println("All initial data has been loaded and events have been fired!");
-            }
-
-            @Override
-            public void onGeoQueryError(Exception exception) {
-                System.err.println("There was an error with this query: " + exception.getLocalizedMessage());
-            }
-        });
-
-
-
     }
 
     @Override
@@ -260,5 +215,69 @@ public class SearchActivity extends AppCompatActivity implements LocationListene
     }
 
 
+    @Override
+    public void onKeyEntered(String s, GeoPoint geoPoint) {
+        System.out.println(String.format("Document %s entered the search area at [%f,%f]", s, location.getLatitude(), location.getLongitude()));
+        DocumentReference userRef1 = db.collection("users").document(s);
+        final String uidS = s;
+        userRef1.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                user = documentSnapshot.toObject(User.class);
+                curUserName = user.username;
+                curUserStatus = user.status;
+                System.out.println(String.format("Username %s entered and status is %s", curUserName, curUserStatus));
+                persons.add(new User(curUserName, curUserStatus, uidS));
+                userMap.put("tempID", persons.size() -1);
 
+                db.collection("users").document(uidS)
+                        .set(userMap, SetOptions.merge())
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+
+                            }
+                        });
+                initializeAdapter();
+            }
+        });
+
+        counter += 1;
+
+
+    }
+
+    @Override
+    public void onKeyExited(String s) {
+        for (int i = 0; i < persons.size(); i++){
+            if (persons.get(i).uid.equals(s)){
+                System.out.println(String.format("Uid %s exited and was removed at index %d", s, i));
+                persons.remove(i);
+            }
+        }
+        System.out.println(String.format("Uid %s exited", s));
+        initializeAdapter();
+
+    }
+
+    @Override
+    public void onKeyMoved(String s, GeoPoint geoPoint) {
+
+    }
+
+    @Override
+    public void onGeoQueryReady() {
+
+    }
+
+    @Override
+    public void onGeoQueryError(Exception e) {
+
+    }
 }
