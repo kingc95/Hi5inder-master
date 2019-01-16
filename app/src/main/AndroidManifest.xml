@@ -11,6 +11,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
 
+    <!-- Required to act as a custom watch face. -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- Required for complications to receive complication data and open the provider chooser. -->
+    <uses-permission android:name="com.google.android.wearable.permission.RECEIVE_COMPLICATION_DATA" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -54,7 +58,7 @@
             android:label="Profile"
             android:screenOrientation="portrait"
             android:theme="@style/Hi5indertheme" />
-        <activity android:name=".SearchActivity"></activity>
+        <activity android:name=".SearchActivity" />
     </application>
 
 </manifest>
